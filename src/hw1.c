@@ -33,7 +33,7 @@ void initialize_board(const char *initial_state, int num_rows, int num_cols) {
     int currentPieceIndex = 0;
     for (int i = 0; i < num_rows; i++) {
         for (int j = 0; j < num_cols; j++) {
-            printf("%c", initial_state[currentPieceIndex++]);
+            printf("%c ", initial_state[currentPieceIndex++]);
         }
         printf("\n");
     }
