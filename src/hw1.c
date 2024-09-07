@@ -92,6 +92,57 @@ void printGamePrompts(int num_rows, int num_cols) {
     }
 }
 
+bool isFourInARow(char piece, int row, int col) {
+    bool fourInARow = true;
+    
+    /* Check for Horizontal 4-in-a-Row */
+    for (int c = col - 3; c <= col; c++) {
+        if (c >= 0) {
+            if (board[row][c] == piece &&
+            board[row][c + 1] == piece &&
+            board[row][c + 2] == piece &&
+            board[row][c + 3] == piece) {
+                return true;
+            }
+        }
+    }
+
+    for (int c = col; c <= col + 3; c++) {
+        if (c >= 0) {
+            if (board[row][c] == piece &&
+            board[row][c + 1] == piece &&
+            board[row][c + 2] == piece &&
+            board[row][c + 3] == piece) {
+                return true;
+            }
+        }
+    }
+
+    /* Check for Vertical 4-in-a-Row */
+    for (int r = row - 3; r <= row; r++) {
+        if (r >= 0) {
+            if (board[r][col] == piece &&
+            board[r + 1][col] == piece &&
+            board[r + 2][col] == piece &&
+            board[r + 3][col] == piece) {
+                return true;
+            }
+        }
+    }
+
+    for (int r = row; r <= row + 3; r++) {
+        if (r >= 0) {
+            if (board[r][col] == piece &&
+            board[r + 1][col] == piece &&
+            board[r + 2][col] == piece &&
+            board[r + 3][col] == piece) {
+                return true;
+            }
+        }
+    }
+    
+}
+
 bool isBoardFilled(num_rows, num_cols) {
     bool filled = true;
 
@@ -131,10 +182,9 @@ void initialize_board(const char *initial_state, int num_rows, int num_cols) {
         }
     }
 
-    // Print the board
+    /* Print the board */
     printGameBoard(num_rows, num_cols);
     printGamePrompts(num_rows, num_cols);
-    
 }
 
 int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int *num_o) {   
