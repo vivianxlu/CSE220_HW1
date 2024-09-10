@@ -14,6 +14,10 @@ int row;
 int col;
 void printGameBoard();
 void printGamePrompts();
+bool horizontalFour(char, int);
+bool verticalFour(char, int);
+bool diagonalFour(char, int, int);
+bool isFourInARow(char, int, int);
 bool isBoardFilled();
 
 /*
@@ -73,10 +77,26 @@ void printGamePrompts(int num_rows, int num_cols) {
             break;
         }
     }
-    
-    /* Check if the chosen space is filled */
+
     if (board[row][col] != '-') {
+        /* Check if the chosen space is filled */
         printf("Invalid choice. That space is already occupied.\n");
+        printGameBoard(num_rows, num_cols);
+        printGamePrompts(num_rows, num_cols);
+    } else {
+        board[row][col] = piece;
+
+        if (isBoardFilled(num_rows, num_cols) == false) {
+            printGameBoard(num_rows, num_cols);
+            printGamePrompts(num_rows, num_cols);
+        } else {
+            printf("Congratulations, you have filled the board!\n");
+            printGameBoard(num_rows, num_cols);
+        }
+    }
+
+    if (isFourInARow(piece, row, col) == true) {
+        printf("Invalid choice.");
         printGameBoard(num_rows, num_cols);
         printGamePrompts(num_rows, num_cols);
     } else {
@@ -92,56 +112,52 @@ void printGamePrompts(int num_rows, int num_cols) {
     }
 }
 
-bool isFourInARow(char piece, int row, int col) {
-    
-    // Horizontal 4-in-a-Row Check
-    for (int c = col - 3; c <= col; c++) {
-        if (c >= 0 && c + 3 < cols) {
-            if (board[row][c] == piece &&
-                board[row][c + 1] == piece &&
-                board[row][c + 2] == piece &&
-                board[row][c + 3] == piece) {
-                return true;
+
+bool horizontalFour(char p, int r) {
+    bool four = false;
+
+    for (int i = 0; i < cols - 3; i++) {
+        if (board[r][i] == p &&
+            board[r][i + 1] == p &&
+            board[r][i + 2] == p &&
+            board[r][i + 3] == p) {
+                four = true;
+                break;
             }
-        }
     }
 
-    // Vertical 4-in-a-Row Check
-    for (int r = row - 3; r <= row; r++) {
-        if (r >= 0 && r + 3 < rows) {
-            if (board[r][col] == piece &&
-                board[r + 1][col] == piece &&
-                board[r + 2][col] == piece &&
-                board[r + 3][col] == piece) {
-                return true;
+    return four;
+}
+
+bool verticalFour(char p, int c) {
+    bool four = false;
+
+    for (int i = 0; i < rows - 3; i++) {
+        if (board[i][c] == p &&
+            board[i + 1][c] == p &&
+            board[i + 2][c] == p &&
+            board[i + 3][c] == p) {
+                four = true;
+                break;
             }
-        }
     }
 
-    // Diagonal (Top-left to Bottom-right - ↘)
-    for (int r = row - 3, c = col - 3; r <= row && c <= col; r++, c++) {
-        if (r >= 0 && c >= 0 && r + 3 < rows && c + 3 < cols) {
-            if (board[r][c] == piece &&
-                board[r + 1][c + 1] == piece &&
-                board[r + 2][c + 2] == piece &&
-                board[r + 3][c + 3] == piece) {
-                return true;
-            }
-        }
-    }
+    return four;
+}
+/*
+bool diagonalFour(char p, int r, int c) {
+    bool four = false;
 
-    // Diagonal (Bottom-left to Top-right - ↙)
-    for (int r = row + 3, c = col - 3; r >= row && c <= col; r--, c++) {
-        if (r < rows && c >= 0 && r - 3 >= 0 && c + 3 < cols) {
-            if (board[r][c] == piece &&
-                board[r - 1][c + 1] == piece &&
-                board[r - 2][c + 2] == piece &&
-                board[r - 3][c + 3] == piece) {
-                return true;
-            }
-        }
-    }
+    for (int )
 
+    return four;
+}
+*/
+
+bool isFourInARow(char p, int r, int c) {
+    if (horizontalFour(p, r) == true || verticalFour(p, c) == true) {
+        return true;
+    }
     return false;
 }
 
@@ -149,7 +165,7 @@ bool isBoardFilled(num_rows, num_cols) {
     bool filled = true;
 
     for (int i = 0; i < num_rows; i++) {
-        for (int j = 0; j < num_rows; j++) {
+        for (int j = 0; j < num_cols; j++) {
             if (board[i][j] == '-') {
                 filled = false;
             }
