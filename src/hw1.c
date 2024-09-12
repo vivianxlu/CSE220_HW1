@@ -14,9 +14,10 @@ int row;
 int col;
 void printGameBoard();
 void printGamePrompts();
-bool horizontalFour(char, int);
-bool verticalFour(char, int);
-bool diagonalFour(char, int, int);
+bool horizontalFour(char, int, int);
+bool verticalFour(char, int, int);
+bool mainDiagonalFour(char, int, int);
+bool antiDiagonalFour(char, int, int);
 bool isFourInARow(char, int, int);
 bool isBoardFilled();
 
@@ -83,20 +84,8 @@ void printGamePrompts(int num_rows, int num_cols) {
         printf("Invalid choice. That space is already occupied.\n");
         printGameBoard(num_rows, num_cols);
         printGamePrompts(num_rows, num_cols);
-    } else {
-        board[row][col] = piece;
-
-        if (isBoardFilled(num_rows, num_cols) == false) {
-            printGameBoard(num_rows, num_cols);
-            printGamePrompts(num_rows, num_cols);
-        } else {
-            printf("Congratulations, you have filled the board!\n");
-            printGameBoard(num_rows, num_cols);
-        }
-    }
-
-    if (isFourInARow(piece, row, col) == true) {
-        printf("Invalid choice.");
+    } else if (isFourInARow(piece, row, col)) {
+        printf("Invalid choice. You have created 4-in-a-row.\n");
         printGameBoard(num_rows, num_cols);
         printGamePrompts(num_rows, num_cols);
     } else {
@@ -110,52 +99,111 @@ void printGamePrompts(int num_rows, int num_cols) {
             printGameBoard(num_rows, num_cols);
         }
     }
+
 }
 
+bool horizontalFour(char p, int r, int c) {
+    board[r][c] = p;
+    int left = c - 1;
+    int right = c + 1;
+    int counter = 1;
 
-bool horizontalFour(char p, int r) {
-    bool four = false;
-
-    for (int i = 0; i < cols - 3; i++) {
-        if (board[r][i] == p &&
-            board[r][i + 1] == p &&
-            board[r][i + 2] == p &&
-            board[r][i + 3] == p) {
-                four = true;
-                break;
-            }
+    while (board[r][left] == p && left >= 0 && counter != 4) {
+        left--;
+        counter++;
+    }
+    while (board[r][right] == p && right <= rows && counter != 4) {
+        right++;
+        counter++;
     }
 
-    return four;
+    if (counter == 4) {
+        board[r][c] = '-';
+        return true;
+    } else {
+        return false;
+    }
 }
 
-bool verticalFour(char p, int c) {
-    bool four = false;
+bool verticalFour(char p, int r, int c) {
+    board[r][c] = p;
+    int up = r - 1;
+    int down = r + 1;
+    int counter = 1;
 
-    for (int i = 0; i < rows - 3; i++) {
-        if (board[i][c] == p &&
-            board[i + 1][c] == p &&
-            board[i + 2][c] == p &&
-            board[i + 3][c] == p) {
-                four = true;
-                break;
-            }
+    while (board[up][c] == p && up >= 0 && counter != 4) {
+        up--;
+        counter++;
+    }
+    while (board[down][c] == p && down <= cols && counter != 4) {
+        down++;
+        counter++;
     }
 
-    return four;
+    if (counter == 4) {
+        board[r][c] = '-';
+        return true;
+    } else {
+        return false;
+    }
 }
-/*
-bool diagonalFour(char p, int r, int c) {
-    bool four = false;
 
-    for (int )
+bool mainDiagonalFour(char p, int r, int c) {
+    board[r][c] = p;
+    int up = r - 1;
+    int down = r + 1;
+    int left = c - 1;
+    int right = c + 1;
+    int counter = 1;
 
-    return four;
+    while (board[up][left] == p && up >= 0 && left >= 0 && counter <= 4) {
+        up--;
+        left--;
+        counter++;
+    }
+    while (board[down][right] == p && down <= rows && right <= cols && counter <= 4) {
+        down++;
+        right++;
+        counter++;
+    }
+
+    if (counter == 4) {
+        board[r][c] = '-';
+        return true;
+    } else {
+        return false;
+    }
 }
-*/
+
+bool antiDiagonalFour(char p, int r, int c) {
+    board[r][c] = p;
+    int up = r - 1;
+    int down = r + 1;
+    int left = c - 1;
+    int right = c + 1;
+    int counter = 1;
+
+    while (board[down][left] == p && down <= rows && left >= 0 && counter <= 4) {
+        down++;
+        left--;
+        counter++;
+    }
+    while (board[up][right] == p && up >= 0 && right <= cols && counter <= 4) {
+        up--;
+        right++;
+        counter++;
+    }
+
+    if (counter == 4) {
+        board[r][c] = '-';
+        return true;
+    } else {
+        return false;
+    }
+}
 
 bool isFourInARow(char p, int r, int c) {
-    if (horizontalFour(p, r) == true || verticalFour(p, c) == true) {
+    if (horizontalFour(p, r, c) == true || verticalFour(p, r, c) == true || mainDiagonalFour(p, r, c) == true || antiDiagonalFour(p, r, c) == true) {
         return true;
     }
     return false;
@@ -192,6 +240,9 @@ void initialize_board(const char *initial_state, int num_rows, int num_cols) {
         return;
     }
 
+    rows = num_rows;
+    cols = num_cols;
+
     /* Fill the board with values from initial_state */
     int currentPieceIndex = 0;
     for (int i = 0; i < num_rows; i++) {
@@ -206,7 +257,7 @@ void initialize_board(const char *initial_state, int num_rows, int num_cols) {
 }
 
 int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int *num_o) {   
-
+    
     return 0;
 }
 
