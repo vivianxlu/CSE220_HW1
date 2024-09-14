@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <string.h>
-
 #include "hw1.h"
 
 char board[MAX_ROWS][MAX_COLS] = {0};
@@ -12,30 +11,30 @@ int cols;
 char piece;
 int row;
 int col;
-void printGameBoard();
-void printGamePrompts();
+void printGameBoard(int, int);
+void printGamePrompts(int, int);
 bool horizontalFour(char, int, int);
 bool verticalFour(char, int, int);
 bool mainDiagonalFour(char, int, int);
 bool antiDiagonalFour(char, int, int);
 bool isFourInARow(char, int, int);
-bool isBoardFilled();
+bool isBoardFilled(int, int);
 
 /*
 Hint: Consider adding a global variable to store a string large enough to store a board.
 */
 
 
-void printGameBoard(int num_rows, int num_cols) {
-    for (int i = 0; i < num_rows; i++) {
-        for (int j = 0; j < num_cols; j++) {
+void printGameBoard(int numRows, int numCols) {
+    for (int i = 0; i < numRows; i++) {
+        for (int j = 0; j < numCols; j++) {
             printf("%c ", board[i][j]);
         }
         printf("\n");
     }
 }
 
-void printGamePrompts(int num_rows, int num_cols) {
+void printGamePrompts(int numRows, int numCols) {
     // Choose a piece
     printf("Choose a piece (x or o) or q to quit: ");
     scanf(" %c", &piece);
@@ -54,12 +53,12 @@ void printGamePrompts(int num_rows, int num_cols) {
     }
     
     /* Choose a row */
-    printf("Choose a row (0-%d): ", num_rows - 1);
+    printf("Choose a row (0-%d): ", numRows - 1);
     scanf(" %d", &row);
 
     while (true) {
-        if (!(row >= 0 && row <= num_rows)) {
-            printf("Invalid choice. Choose a row (0-%d): ", num_rows - 1);
+        if (!(row >= 0 && row <= numRows)) {
+            printf("Invalid choice. Choose a row (0-%d): ", numRows - 1);
             scanf(" %d", &row);
         } else {
             break;
@@ -67,12 +66,12 @@ void printGamePrompts(int num_rows, int num_cols) {
     }
     
     /* Choose a column */
-    printf("Choose a column (0-%d): ", num_cols - 1);
+    printf("Choose a column (0-%d): ", numCols - 1);
     scanf(" %d", &col);
 
     while (true) {
-        if (!(col >= 0 && col <= num_cols)) {
-            printf("Invalid choice. Choose a column (0-%d): ", num_cols - 1);
+        if (!(col >= 0 && col <= numCols)) {
+            printf("Invalid choice. Choose a column (0-%d): ", numCols - 1);
             scanf(" %d", &col);
         } else {
             break;
@@ -82,21 +81,21 @@ void printGamePrompts(int num_rows, int num_cols) {
     if (board[row][col] != '-') {
         /* Check if the chosen space is filled */
         printf("Invalid choice. That space is already occupied.\n");
-        printGameBoard(num_rows, num_cols);
-        printGamePrompts(num_rows, num_cols);
+        printGameBoard(numRows, numCols);
+        printGamePrompts(numRows, numCols);
     } else if (isFourInARow(piece, row, col)) {
         printf("Invalid choice. You have created 4-in-a-row.\n");
-        printGameBoard(num_rows, num_cols);
-        printGamePrompts(num_rows, num_cols);
+        printGameBoard(numRows, numCols);
+        printGamePrompts(numRows, numCols);
     } else {
         board[row][col] = piece;
 
-        if (isBoardFilled(num_rows, num_cols) == false) {
-            printGameBoard(num_rows, num_cols);
-            printGamePrompts(num_rows, num_cols);
+        if (isBoardFilled(numRows, numCols) == false) {
+            printGameBoard(numRows, numCols);
+            printGamePrompts(numRows, numCols);
         } else {
             printf("Congratulations, you have filled the board!\n");
-            printGameBoard(num_rows, num_cols);
+            printGameBoard(numRows, numCols);
         }
     }
 
@@ -209,11 +208,11 @@ bool isFourInARow(char p, int r, int c) {
     return false;
 }
 
-bool isBoardFilled(num_rows, num_cols) {
+bool isBoardFilled(int numRows, int numCols) {
     bool filled = true;
 
-    for (int i = 0; i < num_rows; i++) {
-        for (int j = 0; j < num_cols; j++) {
+    for (int i = 0; i < numRows; i++) {
+        for (int j = 0; j < numCols; j++) {
             if (board[i][j] == '-') {
                 filled = false;
             }
@@ -228,7 +227,7 @@ void initialize_board(const char *initial_state, int num_rows, int num_cols) {
     // Compute the length of the initial_state string
     int initial_state_length = strlen(initial_state);
 
-    // Edge Cases
+    // Check Edge Cases
     if (num_rows > MAX_ROWS) {
         printf("The number of rows that was entered exceeds the limit.");
         return;
@@ -257,6 +256,48 @@ void initialize_board(const char *initial_state, int num_rows, int num_cols) {
 }
 
 int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int *num_o) {   
+    char localBoard[20][20] = {0};
+
+    bool localHoriFour(char currPiece, int row, int col);
+    bool localVertFour(char currPiece, int row, int col);
+    bool localMainDiagFour(char currPiece, int row, int col);
+    bool localAntiDiagFour(char currPiece, int row, int col);
+    bool localIsFourInARow(char currPiece, int row, int col);
+
+    /* Fill the board with values from initial_state */
+    int currentPieceIndex = 0;
+    for (int i = 0; i < num_rows; i++) {
+        for (int j = 0; j < num_cols; j++) {
+            localBoard[i][j] = initial_state[currentPieceIndex++];
+        }
+    }
+
+    /* Print the board */
+    for (int r = 0; r < num_rows; r++) {
+        for (int c = 0; c < num_cols; c++) {
+            printf("%c ", localBoard[r][c]);
+        }
+        printf("\n");
+    }
+
+    /* Check for invalid characters in the initial board */
+    for (int r = 0; r < num_rows; r++) {
+        for (int c = 0; c < num_cols; c++) {
+            if (localBoard[r][c] != 'x' && localBoard[r][c] != 'o' && localBoard[r][c] != '-') {
+                return INITIAL_BOARD_INVALID_CHARACTERS;
+            }
+        }
+    }
+
+    /* Check for a four-in-a-row in the initial board */
+    char currentPiece;
+    for (int r = 0; r < num_rows; r++) {
+        for (int c = 0; c < num_cols; c++) {
+            currentPiece = localBoard[r][c];
+        }
+    }
+
+
     
     return 0;
 }
