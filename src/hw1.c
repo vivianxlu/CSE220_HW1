@@ -403,18 +403,17 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
             for (int c = 0; c < num_cols; c++) {
                 if (board[r][c] == '-') {
                     board[r][c] = 'x';
-                    if (solveIsFourInARow(board[r][c], r, c)) {
+                    if (solveIsFourInARow('x', r, c)) {
                         board[r][c] = 'o';
-                        if (solveIsFourInARow(board[r][c], r, c)) {
+                        if (solveIsFourInARow('o', r, c)) {
                             board[r][c] = '-';
                             return INITIAL_BOARD_NO_SOLUTION;
                         }
                     } else {
-                        board[r][c] = '-';
                         board[r][c] = 'o';
-                        if (solveIsFourInARow(board[r][c], r, c)) {
+                        if (solveIsFourInARow('o', r, c)) {
                             board[r][c] = 'x';
-                            if (solveIsFourInARow(board[r][c], r, c)) {
+                            if (solveIsFourInARow('x', r, c)) {
                                 board[r][c] = '-';
                                 return INITIAL_BOARD_NO_SOLUTION;
                             }
@@ -422,15 +421,6 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                     } 
                 }
             }
-        }
-
-        if (isBoardFilled(num_rows, num_cols)) {
-            return 
-            break;
-        }
-
-        if (piecesPlaced == 0) {
-        return HEURISTICS_FAILED;
         }
     }
     
