@@ -94,7 +94,7 @@ void printGamePrompts(int numRows, int numCols) {
             printGameBoard(numRows, numCols);
             printGamePrompts(numRows, numCols);
         } else {
-            printf("Congratulations, you have filled the board!\n");
+            printf("Congratulations, you have filled the board with no 4-in-a-rows!\n");
             printGameBoard(numRows, numCols);
         }
     }
