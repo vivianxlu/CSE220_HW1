@@ -258,11 +258,110 @@ void initialize_board(const char *initial_state, int num_rows, int num_cols) {
 int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int *num_o) {   
     char localBoard[20][20] = {0};
 
-    bool localHoriFour(char currPiece, int row, int col);
-    bool localVertFour(char currPiece, int row, int col);
-    bool localMainDiagFour(char currPiece, int row, int col);
-    bool localAntiDiagFour(char currPiece, int row, int col);
-    bool localIsFourInARow(char currPiece, int row, int col);
+    bool localHoriFour(char currPiece, int currRow, int currCol) {
+        int left = currCol - 1;
+        int right = currCol + 1;
+        int counter = 1;
+
+        while (localBoard[currRow][left] == currPiece && left >= 0 && counter != 4) {
+        left--;
+        counter++;
+        }
+        while (localBoard[currRow][right] == currPiece && right <= rows && counter != 4) {
+            right++;
+            counter++;
+        }
+
+        if (counter == 4) {
+            return true;
+        }
+        return false;
+    }
+
+    bool localVertFour(char currPiece, int currRow, int currCol) {
+        int up = currRow - 1;
+        int down = currRow + 1;
+        int counter = 1;
+
+        while (localBoard[up][currCol] == currPiece && up >= 0 && counter != 4) {
+            up--;
+            counter++;
+        }
+        while (localBoard[down][currCol] == currPiece && down <= cols && counter != 4) {
+            down++;
+            counter++;
+        }
+
+        if (counter == 4) {
+            return true;
+        }
+        return false;
+    }
+
+    bool localMainDiagFour(char currPiece, int currRow, int currCol) {
+        int up = currRow - 1;
+        int down = currRow + 1;
+        int left = currCol - 1;
+        int right = currCol + 1;
+        int counter = 1;
+
+        while (localBoard[up][left] == currPiece && up >= 0 && left >= 0 && counter <= 4) {
+            up--;
+            left--;
+            counter++;
+        }
+        while (localBoard[down][right] == currPiece && down <= rows && right <= cols && counter <= 4) {
+            down++;
+            right++;
+            counter++;
+        }
+
+        if (counter == 4) {
+            return true;
+        }
+        return false;
+    }
+
+    bool localAntiDiagFour(char currPiece, int currRow, int currCol) {
+        int up = currRow - 1;
+        int down = currRow + 1;
+        int left = currCol - 1;
+        int right = currCol + 1;
+        int counter = 1;
+
+        while (board[down][left] == currPiece && down <= rows && left >= 0 && counter <= 4) {
+            down++;
+            left--;
+            counter++;
+        }
+        while (board[up][right] == currPiece && up >= 0 && right <= cols && counter <= 4) {
+            up--;
+            right++;
+            counter++;
+        }
+
+        if (counter == 4) {
+            return true;
+        }
+        return false;
+    }
+
+    bool localIsFourInARow(char currPiece, int currRow, int currCol) {
+        if (currPiece != '-') {
+            if (localHoriFour(currPiece, currRow, currCol) == true || localVertFour(currPiece, currRow, currCol) == true ||
+            localMainDiagFour(currPiece, currRow, currCol) == true || localAntiDiagFour(currPiece, currRow, currCol) == true) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool containsInvalidCharacters(char currPiece) {
+        if (currPiece != 'x' && currPiece != 'o' && currPiece != '-') {
+            return true;
+        }
+        return false;
+    }
 
     /* Fill the board with values from initial_state */
     int currentPieceIndex = 0;
@@ -280,23 +379,29 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
         printf("\n");
     }
 
-    /* Check for invalid characters in the initial board */
+    /* --- START | CHECK INITIAL BOARD STATE --- */
+    int invalidCharactersCount = 0;
+    int fourInARowCount = 0;
     for (int r = 0; r < num_rows; r++) {
         for (int c = 0; c < num_cols; c++) {
-            if (localBoard[r][c] != 'x' && localBoard[r][c] != 'o' && localBoard[r][c] != '-') {
-                return INITIAL_BOARD_INVALID_CHARACTERS;
+
+            if (containsInvalidCharacters(localBoard[r][c])) {
+                /* Check for Invalid Characters */
+                invalidCharactersCount++;
+            }
+            if (localIsFourInARow(localBoard[r][c], r, c)) {
+                /* Check for Four in a Row */
+                fourInARowCount++;
             }
         }
     }
 
-    /* Check for a four-in-a-row in the initial board */
-    char currentPiece;
-    for (int r = 0; r < num_rows; r++) {
-        for (int c = 0; c < num_cols; c++) {
-            currentPiece = localBoard[r][c];
-        }
+    if ((invalidCharactersCount > 0 && fourInARowCount > 0) || (invalidCharactersCount > 0 && fourInARowCount == 0)) {
+        return INITIAL_BOARD_INVALID_CHARACTERS;
+    } else if (invalidCharactersCount == 0 && fourInARowCount > 0) {
+        return INITIAL_BOARD_FOUR_IN_A_ROW;
     }
-
+    /* --- END | CHECK INTITAL BOARD STATE --- */
 
     
     return 0;
