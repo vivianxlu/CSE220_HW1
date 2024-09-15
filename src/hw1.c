@@ -256,18 +256,17 @@ void initialize_board(const char *initial_state, int num_rows, int num_cols) {
 }
 
 int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int *num_o) {   
-    char localBoard[20][20] = {0};
 
-    bool localHoriFour(char currPiece, int currRow, int currCol) {
+    bool solveHoriFour(char currPiece, int currRow, int currCol) {
         int left = currCol - 1;
         int right = currCol + 1;
         int counter = 1;
 
-        while (localBoard[currRow][left] == currPiece && left >= 0 && counter != 4) {
+        while (board[currRow][left] == currPiece && left >= 0 && counter != 4) {
         left--;
         counter++;
         }
-        while (localBoard[currRow][right] == currPiece && right <= rows && counter != 4) {
+        while (board[currRow][right] == currPiece && right <= rows && counter != 4) {
             right++;
             counter++;
         }
@@ -278,16 +277,16 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
         return false;
     }
 
-    bool localVertFour(char currPiece, int currRow, int currCol) {
+    bool solveVertFour(char currPiece, int currRow, int currCol) {
         int up = currRow - 1;
         int down = currRow + 1;
         int counter = 1;
 
-        while (localBoard[up][currCol] == currPiece && up >= 0 && counter != 4) {
+        while (board[up][currCol] == currPiece && up >= 0 && counter != 4) {
             up--;
             counter++;
         }
-        while (localBoard[down][currCol] == currPiece && down <= cols && counter != 4) {
+        while (board[down][currCol] == currPiece && down <= cols && counter != 4) {
             down++;
             counter++;
         }
@@ -298,19 +297,19 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
         return false;
     }
 
-    bool localMainDiagFour(char currPiece, int currRow, int currCol) {
+    bool solveMainDiagFour(char currPiece, int currRow, int currCol) {
         int up = currRow - 1;
         int down = currRow + 1;
         int left = currCol - 1;
         int right = currCol + 1;
         int counter = 1;
 
-        while (localBoard[up][left] == currPiece && up >= 0 && left >= 0 && counter <= 4) {
+        while (board[up][left] == currPiece && up >= 0 && left >= 0 && counter <= 4) {
             up--;
             left--;
             counter++;
         }
-        while (localBoard[down][right] == currPiece && down <= rows && right <= cols && counter <= 4) {
+        while (board[down][right] == currPiece && down <= rows && right <= cols && counter <= 4) {
             down++;
             right++;
             counter++;
@@ -322,7 +321,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
         return false;
     }
 
-    bool localAntiDiagFour(char currPiece, int currRow, int currCol) {
+    bool solveAntiDiagFour(char currPiece, int currRow, int currCol) {
         int up = currRow - 1;
         int down = currRow + 1;
         int left = currCol - 1;
@@ -346,10 +345,10 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
         return false;
     }
 
-    bool localIsFourInARow(char currPiece, int currRow, int currCol) {
+    bool solveIsFourInARow(char currPiece, int currRow, int currCol) {
         if (currPiece != '-') {
-            if (localHoriFour(currPiece, currRow, currCol) == true || localVertFour(currPiece, currRow, currCol) == true ||
-            localMainDiagFour(currPiece, currRow, currCol) == true || localAntiDiagFour(currPiece, currRow, currCol) == true) {
+            if (solveHoriFour(currPiece, currRow, currCol) == true || solveVertFour(currPiece, currRow, currCol) == true ||
+            solveMainDiagFour(currPiece, currRow, currCol) == true || solveAntiDiagFour(currPiece, currRow, currCol) == true) {
                 return true;
             }
         }
@@ -367,42 +366,73 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     int currentPieceIndex = 0;
     for (int i = 0; i < num_rows; i++) {
         for (int j = 0; j < num_cols; j++) {
-            localBoard[i][j] = initial_state[currentPieceIndex++];
+            board[i][j] = initial_state[currentPieceIndex++];
         }
     }
 
     /* Print the board */
-    for (int r = 0; r < num_rows; r++) {
-        for (int c = 0; c < num_cols; c++) {
-            printf("%c ", localBoard[r][c]);
-        }
-        printf("\n");
-    }
+    printGameBoard(num_rows, num_cols);
 
-    /* --- START | CHECK INITIAL BOARD STATE --- */
-    int invalidCharactersCount = 0;
-    int fourInARowCount = 0;
-    for (int r = 0; r < num_rows; r++) {
-        for (int c = 0; c < num_cols; c++) {
+    int checkInitialBoardState(int totalRows, int totalCols) {
+        int invalidCharactersCount = 0;
+        int fourInARowCount = 0;
+        for (int r = 0; r < totalRows; r++) {
+            for (int c = 0; c < totalCols; c++) {
 
-            if (containsInvalidCharacters(localBoard[r][c])) {
-                /* Check for Invalid Characters */
-                invalidCharactersCount++;
-            }
-            if (localIsFourInARow(localBoard[r][c], r, c)) {
-                /* Check for Four in a Row */
-                fourInARowCount++;
+                if (containsInvalidCharacters(board[r][c])) {
+                    /* Check for Invalid Characters */
+                    invalidCharactersCount++;
+                }
+                if (solveIsFourInARow(board[r][c], r, c)) {
+                    /* Check for Four in a Row */
+                    fourInARowCount++;
+                }
             }
         }
+
+        if ((invalidCharactersCount > 0 && fourInARowCount > 0) || (invalidCharactersCount > 0 && fourInARowCount == 0)) {
+            return INITIAL_BOARD_INVALID_CHARACTERS;
+        } else if (invalidCharactersCount == 0 && fourInARowCount > 0) {
+            return INITIAL_BOARD_FOUR_IN_A_ROW;
+        }
     }
 
-    if ((invalidCharactersCount > 0 && fourInARowCount > 0) || (invalidCharactersCount > 0 && fourInARowCount == 0)) {
-        return INITIAL_BOARD_INVALID_CHARACTERS;
-    } else if (invalidCharactersCount == 0 && fourInARowCount > 0) {
-        return INITIAL_BOARD_FOUR_IN_A_ROW;
-    }
-    /* --- END | CHECK INTITAL BOARD STATE --- */
+    while (true) {
+        int piecesPlaced = 0;
+        for (int r = 0; r < num_rows; r++) {
+            for (int c = 0; c < num_cols; c++) {
+                if (board[r][c] == '-') {
+                    board[r][c] = 'x';
+                    if (solveIsFourInARow(board[r][c], r, c)) {
+                        board[r][c] = 'o';
+                        if (solveIsFourInARow(board[r][c], r, c)) {
+                            board[r][c] = '-';
+                            return INITIAL_BOARD_NO_SOLUTION;
+                        }
+                    } else {
+                        board[r][c] = '-';
+                        board[r][c] = 'o';
+                        if (solveIsFourInARow(board[r][c], r, c)) {
+                            board[r][c] = 'x';
+                            if (solveIsFourInARow(board[r][c], r, c)) {
+                                board[r][c] = '-';
+                                return INITIAL_BOARD_NO_SOLUTION;
+                            }
+                        }
+                    } 
+                }
+            }
+        }
 
+        if (isBoardFilled(num_rows, num_cols)) {
+            return 
+            break;
+        }
+
+        if (piecesPlaced == 0) {
+        return HEURISTICS_FAILED;
+        }
+    }
     
     return 0;
 }
