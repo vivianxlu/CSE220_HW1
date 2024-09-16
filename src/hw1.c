@@ -222,6 +222,113 @@ bool isBoardFilled(int numRows, int numCols) {
     return filled;
 }
 
+bool solveHoriFour(char currPiece, int currRow, int currCol) {
+        int left = currCol - 1;
+        int right = currCol + 1;
+        int counter = 1;
+
+        while (board[currRow][left] == currPiece && left >= 0 && counter <= 4) {
+            left--;
+            counter++;
+        }
+        while (board[currRow][right] == currPiece && right <= cols && counter <= 4) {
+            right++;
+            counter++;
+        }
+
+        if (counter == 4) {
+            return true;
+        }
+        return false;
+    }
+
+bool solveVertFour(char currPiece, int currRow, int currCol) {
+        int up = currRow - 1;
+        int down = currRow + 1;
+        int counter = 1;
+
+        while (board[up][currCol] == currPiece && up >= 0 && counter <= 4) {
+            up--;
+            counter++;
+        }
+        while (board[down][currCol] == currPiece && down <= cols && counter <= 4) {
+            down++;
+            counter++;
+        }
+
+        if (counter == 4) {
+            return true;
+        }
+        return false;
+    }
+
+bool solveMainDiagFour(char currPiece, int currRow, int currCol) {
+        int up = currRow - 1;
+        int down = currRow + 1;
+        int left = currCol - 1;
+        int right = currCol + 1;
+        int counter = 1;
+
+        while (board[up][left] == currPiece && up >= 0 && left >= 0 && counter <= 4) {
+            up--;
+            left--;
+            counter++;
+        }
+        while (board[down][right] == currPiece && down <= rows && right <= cols && counter <= 4) {
+            down++;
+            right++;
+            counter++;
+        }
+
+        if (counter == 4) {
+            return true;
+        }
+        return false;
+    }
+
+bool solveAntiDiagFour(char currPiece, int currRow, int currCol) {
+        int up = currRow - 1;
+        int down = currRow + 1;
+        int left = currCol - 1;
+        int right = currCol + 1;
+        int counter = 1;
+
+        while (board[down][left] == currPiece && down <= rows && left >= 0 && counter <= 4) {
+            down++;
+            left--;
+            counter++;
+        }
+        while (board[up][right] == currPiece && up >= 0 && right <= cols && counter <= 4) {
+            up--;
+            right++;
+            counter++;
+        }
+
+        if (counter == 4) {
+            return true;
+        }
+        return false;
+    }
+
+bool solveIsFourInARow(char currPiece, int currRow, int currCol) {
+        if (currPiece != '-') {
+            if (solveHoriFour(currPiece, currRow, currCol) == true || solveVertFour(currPiece, currRow, currCol) == true ||
+            solveMainDiagFour(currPiece, currRow, currCol) == true || solveAntiDiagFour(currPiece, currRow, currCol) == true) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+bool containsInvalidCharacters(char currPiece) {
+        if (currPiece != 'x' && currPiece != 'o' && currPiece != '-') {
+            return true;
+        }
+        return false;
+    }
+
+    
+
 void initialize_board(const char *initial_state, int num_rows, int num_cols) {
 
     // Compute the length of the initial_state string
@@ -257,111 +364,7 @@ void initialize_board(const char *initial_state, int num_rows, int num_cols) {
 
 int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int *num_o) {   
 
-    bool solveHoriFour(char currPiece, int currRow, int currCol) {
-        int left = currCol - 1;
-        int right = currCol + 1;
-        int counter = 1;
-
-        while (board[currRow][left] == currPiece && left >= 0 && counter != 4) {
-        left--;
-        counter++;
-        }
-        while (board[currRow][right] == currPiece && right <= rows && counter != 4) {
-            right++;
-            counter++;
-        }
-
-        if (counter == 4) {
-            return true;
-        }
-        return false;
-    }
-
-    bool solveVertFour(char currPiece, int currRow, int currCol) {
-        int up = currRow - 1;
-        int down = currRow + 1;
-        int counter = 1;
-
-        while (board[up][currCol] == currPiece && up >= 0 && counter != 4) {
-            up--;
-            counter++;
-        }
-        while (board[down][currCol] == currPiece && down <= cols && counter != 4) {
-            down++;
-            counter++;
-        }
-
-        if (counter == 4) {
-            return true;
-        }
-        return false;
-    }
-
-    bool solveMainDiagFour(char currPiece, int currRow, int currCol) {
-        int up = currRow - 1;
-        int down = currRow + 1;
-        int left = currCol - 1;
-        int right = currCol + 1;
-        int counter = 1;
-
-        while (board[up][left] == currPiece && up >= 0 && left >= 0 && counter <= 4) {
-            up--;
-            left--;
-            counter++;
-        }
-        while (board[down][right] == currPiece && down <= rows && right <= cols && counter <= 4) {
-            down++;
-            right++;
-            counter++;
-        }
-
-        if (counter == 4) {
-            return true;
-        }
-        return false;
-    }
-
-    bool solveAntiDiagFour(char currPiece, int currRow, int currCol) {
-        int up = currRow - 1;
-        int down = currRow + 1;
-        int left = currCol - 1;
-        int right = currCol + 1;
-        int counter = 1;
-
-        while (board[down][left] == currPiece && down <= rows && left >= 0 && counter <= 4) {
-            down++;
-            left--;
-            counter++;
-        }
-        while (board[up][right] == currPiece && up >= 0 && right <= cols && counter <= 4) {
-            up--;
-            right++;
-            counter++;
-        }
-
-        if (counter == 4) {
-            return true;
-        }
-        return false;
-    }
-
-    bool solveIsFourInARow(char currPiece, int currRow, int currCol) {
-        if (currPiece != '-') {
-            if (solveHoriFour(currPiece, currRow, currCol) == true || solveVertFour(currPiece, currRow, currCol) == true ||
-            solveMainDiagFour(currPiece, currRow, currCol) == true || solveAntiDiagFour(currPiece, currRow, currCol) == true) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    bool containsInvalidCharacters(char currPiece) {
-        if (currPiece != 'x' && currPiece != 'o' && currPiece != '-') {
-            return true;
-        }
-        return false;
-    }
-
+    
     /* Fill the board with values from initial_state */
     int currentPieceIndex = 0;
     for (int i = 0; i < num_rows; i++) {
@@ -397,32 +400,50 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
         }
     }
 
-    while (true) {
-        int piecesPlaced = 0;
         for (int r = 0; r < num_rows; r++) {
             for (int c = 0; c < num_cols; c++) {
+                printf("Board for each new column iteration below: \n");
+                printGameBoard(num_rows, num_cols);
+                printf("The space at this iteration contains: %c \n", board[r][c]);
                 if (board[r][c] == '-') {
                     board[r][c] = 'x';
+                    printf("%d", solveIsFourInARow('x', r, c));
                     if (solveIsFourInARow('x', r, c)) {
+                        printf("First Check: The 'x' piece creates a four-in-a-row\n");
                         board[r][c] = 'o';
+                        printf("%d", solveIsFourInARow('o', r, c));
                         if (solveIsFourInARow('o', r, c)) {
+                            printf("Second Check: The 'o' piece creates four-in-a-row\n");
                             board[r][c] = '-';
                             return INITIAL_BOARD_NO_SOLUTION;
+                        } else {
+                            printf("Skipped the second check: In 'else'-statement\n");
+                            continue;
                         }
                     } else {
+                        printf("Skipped the first check: In 'else'-statement\n");
                         board[r][c] = 'o';
+                        printf("here" );
+                        printGameBoard(num_rows, num_cols);
+                        printf("%d", solveIsFourInARow('o', r, c));
                         if (solveIsFourInARow('o', r, c)) {
+                            printf("Third check: 'o' creates a four-in-a-row\n");
                             board[r][c] = 'x';
+                            printf("%d", solveIsFourInARow('x', r, c));
                             if (solveIsFourInARow('x', r, c)) {
+                                printf("Fourth check: 'x' creates a four-in-a-row\n");
                                 board[r][c] = '-';
                                 return INITIAL_BOARD_NO_SOLUTION;
+                            } else {
+                                printf("Skipped the fourth check: In 'else'-statement\n");
+                                continue;
                             }
                         }
-                    } 
+                        printf("Skipped the third check: In 'else'-statement\n");
+                    }
                 }
             }
         }
-    }
     
     return 0;
 }
