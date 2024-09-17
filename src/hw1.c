@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <string.h>
 #include "hw1.h"
+// #include "../include/hw1.h"
 
 char board[MAX_ROWS][MAX_COLS] = {0};
 int rows;
@@ -24,7 +25,7 @@ bool isBoardFilled(int, int);
 Hint: Consider adding a global variable to store a string large enough to store a board.
 */
 
-
+/* --- START | MULTIPURPOSE --- */
 void printGameBoard(int numRows, int numCols) {
     for (int i = 0; i < numRows; i++) {
         for (int j = 0; j < numCols; j++) {
@@ -114,6 +115,7 @@ bool isBoardFilled(int numRows, int numCols) {
 
     return filled;
 }
+/* --- START | MULTIPURPOSE --- */
 
 /* --- START | For the initialize_board function --- */
 bool horizontalFour(char p, int r, int c) {
@@ -225,15 +227,16 @@ bool isFourInARow(char p, int r, int c) {
 /* --- END | For the initialize_board function --- */
 
 /* --- START | For the solve function --- */
-bool horiFour(char currPiece, int currRow, int currCol) {
+bool horiFour(char currPiece, int currRow, int currCol, int totalCols) {
         int left = currCol - 1;
         int right = currCol + 1;
         int counter = 1;
-        while (left >= 0 && board[currRow][left] == currPiece && counter <= 4) {
+        
+        while (left >= 0 && board[currRow][left] == currPiece && counter != 4) {
             left--;
             counter++;
         }
-        while (right <= cols && board[currRow][right] == currPiece && counter <= 4) {
+        while (right < totalCols && board[currRow][right] == currPiece && counter != 4) {
             right++;
             counter++;
         }
@@ -245,16 +248,16 @@ bool horiFour(char currPiece, int currRow, int currCol) {
         
     }
 
-bool vertFour(char currPiece, int currRow, int currCol) {
+bool vertFour(char currPiece, int currRow, int currCol, int totalRows) {
         int up = currRow - 1;
         int down = currRow + 1;
         int counter = 1;
 
-        while (board[up][currCol] == currPiece && up >= 0 && counter <= 4) {
+        while (board[up][currCol] == currPiece && up >= 0 && counter != 4) {
             up--;
             counter++;
         }
-        while (board[down][currCol] == currPiece && down <= cols && counter <= 4) {
+        while (board[down][currCol] == currPiece && down < totalRows && counter != 4) {
             down++;
             counter++;
         }
@@ -265,19 +268,19 @@ bool vertFour(char currPiece, int currRow, int currCol) {
         return false;
     }
 
-bool mainDiagFour(char currPiece, int currRow, int currCol) {
+bool mainDiagFour(char currPiece, int currRow, int currCol, int totalRows, int totalCols) {
         int up = currRow - 1;
         int down = currRow + 1;
         int left = currCol - 1;
         int right = currCol + 1;
         int counter = 1;
 
-        while (board[up][left] == currPiece && up >= 0 && left >= 0 && counter <= 4) {
+        while (board[up][left] == currPiece && up >= 0 && left >= 0 && counter != 4) {
             up--;
             left--;
             counter++;
         }
-        while (board[down][right] == currPiece && down <= rows && right <= cols && counter <= 4) {
+        while (board[down][right] == currPiece && down < totalRows && right < totalCols && counter != 4) {
             down++;
             right++;
             counter++;
@@ -289,19 +292,19 @@ bool mainDiagFour(char currPiece, int currRow, int currCol) {
         return false;
     }
 
-bool antiDiagFour(char currPiece, int currRow, int currCol) {
+bool antiDiagFour(char currPiece, int currRow, int currCol, int totalRows, int totalCols) {
         int up = currRow - 1;
         int down = currRow + 1;
         int left = currCol - 1;
         int right = currCol + 1;
         int counter = 1;
 
-        while (board[down][left] == currPiece && down <= rows && left >= 0 && counter <= 4) {
+        while (board[down][left] == currPiece && down < totalRows && left >= 0 && counter != 4) {
             down++;
             left--;
             counter++;
         }
-        while (board[up][right] == currPiece && up >= 0 && right <= cols && counter <= 4) {
+        while (board[up][right] == currPiece && up >= 0 && right < totalCols && counter != 4) {
             up--;
             right++;
             counter++;
@@ -313,10 +316,10 @@ bool antiDiagFour(char currPiece, int currRow, int currCol) {
         return false;
     }
 
-bool solveIsFourInARow(char currPiece, int currRow, int currCol) {
+bool solveIsFourInARow(char currPiece, int currRow, int currCol, int totalRows, int totalCols) {
         if (currPiece != '-') {
-            if (horiFour(currPiece, currRow, currCol) == true || vertFour(currPiece, currRow, currCol) == true ||
-            mainDiagFour(currPiece, currRow, currCol) == true || antiDiagFour(currPiece, currRow, currCol) == true) {
+            if (horiFour(currPiece, currRow, currCol, totalCols) == true || vertFour(currPiece, currRow, currCol, totalRows) == true ||
+            mainDiagFour(currPiece, currRow, currCol, totalRows, totalCols) == true || antiDiagFour(currPiece, currRow, currCol, totalRows, totalCols) == true) {
                 return true;
             }
         }
@@ -329,8 +332,34 @@ bool containsInvalidCharacters(char currPiece) {
         }
         return false;
     }
+
+int checkInitialBoardState(int totalRows, int totalCols) {
+        int invalidCharactersCount = 0;
+        int fourInARowCount = 0;
+
+        for (int r = 0; r < totalRows; r++) {
+            for (int c = 0; c < totalCols; c++) {
+                if (containsInvalidCharacters(board[r][c])) {
+                    /* Check for Invalid Characters */
+                    invalidCharactersCount++;
+                }
+                if (solveIsFourInARow(board[r][c], r, c, totalRows, totalCols)) {
+                    /* Check for Four in a Row */
+                    fourInARowCount++;
+                }
+            }
+        }
+
+        if ((invalidCharactersCount > 0 && fourInARowCount > 0) || (invalidCharactersCount > 0 && fourInARowCount == 0)) {
+            return INITIAL_BOARD_INVALID_CHARACTERS;
+        } else if (invalidCharactersCount == 0 && fourInARowCount > 0) {
+            return INITIAL_BOARD_FOUR_IN_A_ROW;
+        } else {
+            return 0;
+        }
+    }
 /* --- END | For the solve function --- */
-    
+
 
 void initialize_board(const char *initial_state, int num_rows, int num_cols) {
 
@@ -366,9 +395,12 @@ void initialize_board(const char *initial_state, int num_rows, int num_cols) {
 }
 
 int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int *num_o) {   
-
+    
     rows = num_rows;
-    cols = num_cols;
+    cols = num_cols; //global~ variable~
+    int countX = 0;
+    int countO = 0;
+
     /* Fill the board with values from initial_state */
     int currentPieceIndex = 0;
     for (int i = 0; i < num_rows; i++) {
@@ -379,86 +411,69 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
 
     /* Print the board */
     printGameBoard(num_rows, num_cols);
-
-    int checkInitialBoardState(int totalRows, int totalCols) {
-        int invalidCharactersCount = 0;
-        int fourInARowCount = 0;
-        for (int r = 0; r < totalRows; r++) {
-            for (int c = 0; c < totalCols; c++) {
-
-                if (containsInvalidCharacters(board[r][c])) {
-                    /* Check for Invalid Characters */
-                    invalidCharactersCount++;
-                }
-                if (solveIsFourInARow(board[r][c], r, c)) {
-                    /* Check for Four in a Row */
-                    fourInARowCount++;
-                }
-            }
-        }
-
-        if ((invalidCharactersCount > 0 && fourInARowCount > 0) || (invalidCharactersCount > 0 && fourInARowCount == 0)) {
-            return INITIAL_BOARD_INVALID_CHARACTERS;
-        } else if (invalidCharactersCount == 0 && fourInARowCount > 0) {
-            return INITIAL_BOARD_FOUR_IN_A_ROW;
-        }
-    }
-
-    while (true) {
-        int piecesPlaced = 0;
-        for (int r = 0; r < num_rows; r++) {
-            for (int c = 0; c < num_cols; c++) {
-                printf("Board for each new column iteration below: \n");
-                printGameBoard(num_rows, num_cols);
-                printf("The space at this iteration contains: %c \n", board[r][c]);
-                if (board[r][c] == '-') {
-                    board[r][c] = 'x';
-                    printf("%d", solveIsFourInARow('x', r, c));
-                    if (solveIsFourInARow('x', r, c)) {
-                        printf("First Check: The 'x' piece creates a four-in-a-row\n");
-                        board[r][c] = 'o';
-                        printf("%d", solveIsFourInARow('o', r, c));
-                        if (solveIsFourInARow('o', r, c)) {
-                            printf("Second Check: The 'o' piece creates four-in-a-row\n");
-                            board[r][c] = '-';
-                            return INITIAL_BOARD_NO_SOLUTION;
-                        } else {
-                            printf("Skipped the second check: In 'else'-statement\n");
-                            piecesPlaced++;
-                            printf("Pieces placed: %d\n", piecesPlaced);
-                            continue;
-                        }
-                    } else {
-                        printf("Skipped the first check: In 'else'-statement\n");
-                        board[r][c] = 'o';
-                        printGameBoard(num_rows, num_cols);
-                        printf("%d", solveIsFourInARow('o', r, c));
-                        if (solveIsFourInARow('o', r, c)) {
-                            printf("Third check: 'o' creates a four-in-a-row\n");
-                            board[r][c] = 'x';
-                            printf("%d", solveIsFourInARow('x', r, c));
-                            if (solveIsFourInARow('x', r, c)) {
-                                printf("Fourth check: 'x' creates a four-in-a-row\n");
-                                board[r][c] = '-';
+    /* Check and return error values */
+    if (checkInitialBoardState(num_rows, num_cols) == -2) {
+        return INITIAL_BOARD_INVALID_CHARACTERS;
+    } else if (checkInitialBoardState(num_rows, num_cols) == -1) {
+        return INITIAL_BOARD_FOUR_IN_A_ROW;
+    } else {
+        while (true) {
+            int piecesPlaced = 0;
+            for (int r = 0; r < num_rows; r++) {
+                for (int c = 0; c < num_cols; c++) {
+                    if (board[r][c] == '-') {
+                        board[r][c] = 'x';
+                        if (solveIsFourInARow('x', r, c, num_rows, num_cols)) {
+                            board[r][c] = 'o';
+                            if (solveIsFourInARow('o', r, c, num_rows, num_cols)) {
                                 return INITIAL_BOARD_NO_SOLUTION;
                             } else {
-                                printf("Skipped the fourth check: In 'else'-statement\n");
                                 piecesPlaced++;
-                                printf("Pieces placed: %d\n", piecesPlaced);
+                                printf("Placed down o: %d at [%d][%d]\n", piecesPlaced, r, c);
+                                printGameBoard(num_rows, num_cols);
+                                printf("\n");
                                 continue;
                             }
+                        } else {
+                            board[r][c] = 'o';
+                            if (solveIsFourInARow('o', r, c, num_rows, num_cols)) {
+                                board[r][c] = 'x';
+                                if (solveIsFourInARow('x', r, c, num_rows, num_cols)) {
+                                    return INITIAL_BOARD_NO_SOLUTION;
+                                } else {
+                                    piecesPlaced++;
+                                    printf("Placed down x: %d at [%d][%d]\n", piecesPlaced, r,c);
+                                    printGameBoard(num_rows, num_cols);
+                                    printf("\n");
+                                    continue;
+                                }
+                            }
                         }
-                        printf("Skipped the third check: In 'else'-statement\n");
+                        board[r][c] = '-';
                     }
-                    board[r][c] = '-';
                 }
             }
-        }
-        if (piecesPlaced == 0 && !isBoardFilled(num_rows, num_cols)) {
-            return HEURISTICS_FAILED;
-        }
-        if (isBoardFilled(num_rows, num_cols)) {
-            return FOUND_SOLUTION;
+            printf("Exited the for loop :D. Pieces Placed: %d\n", piecesPlaced);
+            if (piecesPlaced == 0 && !isBoardFilled(num_rows, num_cols)) {
+                printf("%d Hi failed", piecesPlaced);
+                return HEURISTICS_FAILED;
+            }
+            if (isBoardFilled(num_rows, num_cols)) {
+                for (int r = 0; r < num_rows; r++) {
+                    for (int c = 0; c < num_cols; c++) {
+                        if (board[r][c] == 'x') {
+                            countX++;
+                        } else {
+                            countO++;
+                        }
+                    }
+                }
+                printGameBoard(num_rows, num_cols);
+                *num_x = countX;
+                *num_o = countO;
+                printf("X's : %d and O's: %d", countX, countO);
+                return FOUND_SOLUTION;
+            }
         }
     }
 
