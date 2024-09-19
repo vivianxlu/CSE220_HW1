@@ -536,10 +536,7 @@ char* generate_medium(const char *final_state, int num_rows, int num_cols) {
                 // printf("\n");
                 // printf("Solve function, return value: %d\n", solve(copiedBoardStr, num_rows, num_cols, &num_x, &num_o));
                 if (solve(copiedBoardStr, num_rows, num_cols, &num_x, &num_o) == FOUND_SOLUTION) {
-                    // printf("removing piece: %d, %d \n", r, c);
-                    // copiedBoardToString(num_rows, num_cols); // set copiedBoardStr to match the state of copiedBoard
-                    // setGlobalBoard(num_rows, num_cols); // set board to match the state of copiedBoard
-                    printf("%s\n", copiedBoardStr);
+                    
                     // piecesRemoved = true;
                 } else {
                     copiedBoard[r][c] = oldChar;
@@ -558,5 +555,8 @@ char* generate_medium(const char *final_state, int num_rows, int num_cols) {
     /* Turn the 2d copiedBoard into a char array */
     // copiedBoardToString(num_rows, num_cols);
     /* Return char array */
+
+    //setGlobalBoard(num_rows, num_cols);
+    //printGameBoard(num_rows, num_cols);
     return copiedBoardStr;
 }
