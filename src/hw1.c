@@ -7,6 +7,8 @@
 // #include "../include/hw1.h"
 
 char board[MAX_ROWS][MAX_COLS] = {0};
+char copiedBoard[MAX_ROWS][MAX_COLS] = {0};
+char copiedBoardStr[MAX_ROWS * MAX_COLS] = "";
 int rows;
 int cols;
 char piece;
@@ -360,6 +362,31 @@ int checkInitialBoardState(int totalRows, int totalCols) {
     }
 /* --- END | For the solve function --- */
 
+void setCopiedBoard(int totalRows, int totalCols) {
+    for (int r = 0; r < totalRows; r++) {
+        for (int c = 0; c < totalCols; c++) {
+            copiedBoard[r][c] = board[r][c];
+        }
+    }
+}
+
+void setGlobalBoard(int totalRows, int totalCols) {
+    for (int r = 0; r < totalRows; r++) {
+        for (int c = 0; c < totalCols; c++) {
+            board[r][c] = copiedBoard[r][c];
+        }
+    }
+}
+
+void copiedBoardToString(int totalRows, int totalCols) {
+    int strIndex = 0;
+
+    for (int r = 0; r < totalRows; r++) {
+        for (int c = 0; c < totalCols; c++) {
+            copiedBoardStr[strIndex++] = copiedBoard[r][c];
+        }
+    }
+}
 
 void initialize_board(const char *initial_state, int num_rows, int num_cols) {
 
@@ -408,9 +435,6 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
             board[i][j] = initial_state[currentPieceIndex++];
         }
     }
-
-    /* Print the board */
-    printGameBoard(num_rows, num_cols);
     /* Check and return error values */
     if (checkInitialBoardState(num_rows, num_cols) == -2) {
         return INITIAL_BOARD_INVALID_CHARACTERS;
@@ -429,9 +453,6 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                                 return INITIAL_BOARD_NO_SOLUTION;
                             } else {
                                 piecesPlaced++;
-                                printf("Placed down o: %d at [%d][%d]\n", piecesPlaced, r, c);
-                                printGameBoard(num_rows, num_cols);
-                                printf("\n");
                                 continue;
                             }
                         } else {
@@ -442,9 +463,6 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                                     return INITIAL_BOARD_NO_SOLUTION;
                                 } else {
                                     piecesPlaced++;
-                                    printf("Placed down x: %d at [%d][%d]\n", piecesPlaced, r,c);
-                                    printGameBoard(num_rows, num_cols);
-                                    printf("\n");
                                     continue;
                                 }
                             }
@@ -453,9 +471,7 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                     }
                 }
             }
-            printf("Exited the for loop :D. Pieces Placed: %d\n", piecesPlaced);
             if (piecesPlaced == 0 && !isBoardFilled(num_rows, num_cols)) {
-                printf("%d Hi failed", piecesPlaced);
                 return HEURISTICS_FAILED;
             }
             if (isBoardFilled(num_rows, num_cols)) {
@@ -468,10 +484,8 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
                         }
                     }
                 }
-                printGameBoard(num_rows, num_cols);
                 *num_x = countX;
                 *num_o = countO;
-                printf("X's : %d and O's: %d", countX, countO);
                 return FOUND_SOLUTION;
             }
         }
@@ -480,7 +494,41 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
     return 0;
 }
 
-char* generate_medium(const char *final_state, int num_rows, int num_cols) { 
 
-    return 0;
+char* generate_medium(const char *final_state, int num_rows, int num_cols) { 
+    
+    int num_x = 0;
+    int num_o = 0;
+
+    int currentPieceIndex = 0;
+    for (int i = 0; i < num_rows; i++) {
+        for (int j = 0; j < num_cols; j++) {
+            board[i][j] = final_state[currentPieceIndex++];
+        }
+    }
+
+    setCopiedBoard(num_rows, num_cols);
+
+    bool piecesRemoved = false;
+
+    while (true) {
+        for (int r = 0; r < num_rows; r++) {
+            for (int c = 0; c < num_cols; c++) {
+                board[r][c] = '-';
+                if (solve(final_state, num_rows, num_cols, &num_x, &num_o)) {
+                    copiedBoard[r][c] = '-';
+                    setGlobalBoard(num_rows, num_cols);
+                    piecesRemoved = true;
+                    continue;
+                }
+            }
+        }
+        if (piecesRemoved) {
+            continue;
+        } else {
+            break;
+        }
+    }
+
+    return copiedBoardStr;
 }
