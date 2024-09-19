@@ -525,7 +525,7 @@ char* generate_medium(const char *final_state, int num_rows, int num_cols) {
 
     // while (true) {
         // printf("making a pass\n");
-        bool piecesRemoved = false;
+        // bool piecesRemoved = false;
         for (int r = 0; r < num_rows; r++) {
             for (int c = 0; c < num_cols; c++) {
                 char oldChar = copiedBoard[r][c];
@@ -540,7 +540,7 @@ char* generate_medium(const char *final_state, int num_rows, int num_cols) {
                     // copiedBoardToString(num_rows, num_cols); // set copiedBoardStr to match the state of copiedBoard
                     // setGlobalBoard(num_rows, num_cols); // set board to match the state of copiedBoard
                     printf("%s\n", copiedBoardStr);
-                    piecesRemoved = true;
+                    // piecesRemoved = true;
                 } else {
                     copiedBoard[r][c] = oldChar;
                     copiedBoardToString(num_rows, num_cols);
