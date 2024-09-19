@@ -368,6 +368,13 @@ void setCopiedBoard(int totalRows, int totalCols) {
             copiedBoard[r][c] = board[r][c];
         }
     }
+    
+    // for (int r = 0; r < totalRows; r++) {
+    //     for (int c = 0; c < totalCols; c++) {
+    //         printf("%c ", copiedBoard[r][c]);
+    //     }
+    //     printf("\n");
+    // }
 }
 
 void setGlobalBoard(int totalRows, int totalCols) {
@@ -495,40 +502,61 @@ int solve(const char *initial_state, int num_rows, int num_cols, int *num_x, int
 }
 
 
-char* generate_medium(const char *final_state, int num_rows, int num_cols) { 
-    
+char* generate_medium(const char *final_state, int num_rows, int num_cols) {
     int num_x = 0;
     int num_o = 0;
 
+    /* Fill the global board with the pieces from *final_State */
     int currentPieceIndex = 0;
     for (int i = 0; i < num_rows; i++) {
         for (int j = 0; j < num_cols; j++) {
-            board[i][j] = final_state[currentPieceIndex++];
+            copiedBoard[i][j] = final_state[currentPieceIndex++];
         }
     }
+    
+    // printGameBoard(num_rows, num_cols);
+    // printf("filled the global board\n");
 
-    setCopiedBoard(num_rows, num_cols);
+    /* Fill the copied board with the same content as the global board*/
+    // setCopiedBoard(num_rows, num_cols);
+    // printf("filled the temp board\n");
 
-    bool piecesRemoved = false;
+    copiedBoardToString(num_rows, num_cols);
 
-    while (true) {
+    // while (true) {
+        // printf("making a pass\n");
+        bool piecesRemoved = false;
         for (int r = 0; r < num_rows; r++) {
             for (int c = 0; c < num_cols; c++) {
-                board[r][c] = '-';
-                if (solve(final_state, num_rows, num_cols, &num_x, &num_o)) {
-                    copiedBoard[r][c] = '-';
-                    setGlobalBoard(num_rows, num_cols);
+                char oldChar = copiedBoard[r][c];
+                
+                copiedBoard[r][c] = '-'; // remove the piece
+                copiedBoardToString(num_rows, num_cols);
+                // printGameBoard(num_rows, num_cols);
+                // printf("\n");
+                // printf("Solve function, return value: %d\n", solve(copiedBoardStr, num_rows, num_cols, &num_x, &num_o));
+                if (solve(copiedBoardStr, num_rows, num_cols, &num_x, &num_o) == FOUND_SOLUTION) {
+                    // printf("removing piece: %d, %d \n", r, c);
+                    // copiedBoardToString(num_rows, num_cols); // set copiedBoardStr to match the state of copiedBoard
+                    // setGlobalBoard(num_rows, num_cols); // set board to match the state of copiedBoard
+                    printf("%s\n", copiedBoardStr);
                     piecesRemoved = true;
-                    continue;
+                } else {
+                    copiedBoard[r][c] = oldChar;
+                    copiedBoardToString(num_rows, num_cols);
                 }
             }
         }
-        if (piecesRemoved) {
-            continue;
-        } else {
-            break;
-        }
-    }
-    copiedBoardToString(num_rows, num_cols);
+    //     /* If we loop through the whole board and removed pieces, loop through again*/
+    //     if (piecesRemoved) {
+    //         continue;
+    //     /* If no pieces could be removed, stop the while loop*/
+    //     } else {
+    //         break;
+    //     }
+    // }
+    /* Turn the 2d copiedBoard into a char array */
+    // copiedBoardToString(num_rows, num_cols);
+    /* Return char array */
     return copiedBoardStr;
 }
