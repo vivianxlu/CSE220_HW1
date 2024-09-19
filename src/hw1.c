@@ -126,11 +126,11 @@ bool horizontalFour(char p, int r, int c) {
     int right = c + 1;
     int counter = 1;
 
-    while (board[r][left] == p && left >= 0 && counter != 4) {
+    while (left >= 0 && board[r][left] == p && counter != 4) {
         left--;
         counter++;
     }
-    while (board[r][right] == p && right <= rows && counter != 4) {
+    while (right <= rows && board[r][right] == p && counter != 4) {
         right++;
         counter++;
     }
@@ -149,11 +149,11 @@ bool verticalFour(char p, int r, int c) {
     int down = r + 1;
     int counter = 1;
 
-    while (board[up][c] == p && up >= 0 && counter != 4) {
+    while (up >= 0 && board[up][c] == p && counter != 4) {
         up--;
         counter++;
     }
-    while (board[down][c] == p && down <= cols && counter != 4) {
+    while (down <= cols && board[down][c] == p && counter != 4) {
         down++;
         counter++;
     }
@@ -174,12 +174,12 @@ bool mainDiagonalFour(char p, int r, int c) {
     int right = c + 1;
     int counter = 1;
 
-    while (board[up][left] == p && up >= 0 && left >= 0 && counter <= 4) {
+    while (up >= 0 && left >= 0 && board[up][left] == p && counter <= 4) {
         up--;
         left--;
         counter++;
     }
-    while (board[down][right] == p && down <= rows && right <= cols && counter <= 4) {
+    while (down <= rows && right <= cols && board[down][right] == p && counter <= 4) {
         down++;
         right++;
         counter++;
@@ -201,12 +201,12 @@ bool antiDiagonalFour(char p, int r, int c) {
     int right = c + 1;
     int counter = 1;
 
-    while (board[down][left] == p && down <= rows && left >= 0 && counter <= 4) {
+    while (down <= rows && left >= 0 && board[down][left] == p && counter <= 4) {
         down++;
         left--;
         counter++;
     }
-    while (board[up][right] == p && up >= 0 && right <= cols && counter <= 4) {
+    while (up >= 0 && right <= cols && board[up][right] == p && counter <= 4) {
         up--;
         right++;
         counter++;
@@ -255,11 +255,11 @@ bool vertFour(char currPiece, int currRow, int currCol, int totalRows) {
         int down = currRow + 1;
         int counter = 1;
 
-        while (board[up][currCol] == currPiece && up >= 0 && counter != 4) {
+        while (up >= 0 && board[up][currCol] == currPiece && counter != 4) {
             up--;
             counter++;
         }
-        while (board[down][currCol] == currPiece && down < totalRows && counter != 4) {
+        while (down < totalRows && board[down][currCol] == currPiece && counter != 4) {
             down++;
             counter++;
         }
@@ -277,12 +277,12 @@ bool mainDiagFour(char currPiece, int currRow, int currCol, int totalRows, int t
         int right = currCol + 1;
         int counter = 1;
 
-        while (board[up][left] == currPiece && up >= 0 && left >= 0 && counter != 4) {
+        while (up >= 0 && left >= 0 && board[up][left] == currPiece && counter != 4) {
             up--;
             left--;
             counter++;
         }
-        while (board[down][right] == currPiece && down < totalRows && right < totalCols && counter != 4) {
+        while (down < totalRows && right < totalCols && board[down][right] == currPiece && counter != 4) {
             down++;
             right++;
             counter++;
@@ -301,12 +301,12 @@ bool antiDiagFour(char currPiece, int currRow, int currCol, int totalRows, int t
         int right = currCol + 1;
         int counter = 1;
 
-        while (board[down][left] == currPiece && down < totalRows && left >= 0 && counter != 4) {
+        while (down < totalRows && left >= 0 && board[down][left] == currPiece && counter != 4) {
             down++;
             left--;
             counter++;
         }
-        while (board[up][right] == currPiece && up >= 0 && right < totalCols && counter != 4) {
+        while (up >= 0 && right < totalCols && board[up][right] == currPiece && counter != 4) {
             up--;
             right++;
             counter++;
