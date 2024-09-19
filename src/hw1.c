@@ -529,6 +529,6 @@ char* generate_medium(const char *final_state, int num_rows, int num_cols) {
             break;
         }
     }
-    copiedBoardToStr(num_rows, num_cols);
+    copiedBoardToString(num_rows, num_cols);
     return copiedBoardStr;
 }
